@@ -1,7 +1,7 @@
 import java.util.HashMap;
 import java.util.Map;
 
-public class concept {
+public class AdvancedInterpolator {
 
     private record InterpInput (double distance, double v_x, double v_y, double v_z) { };
     private record InterpOutput (double yaw, double pitch) { }; 
@@ -10,10 +10,10 @@ public class concept {
     double simIncrement = 0.2;
     double minDistance = 1;
     double maxDistance = 5;
-    double height = 2;
-    double C = 0.5588; // height at which game piece leaves turret
-    double g = 9.81; // gravity
-    double targetHeight = 2; // target height
+    double g = Constants.gravitationalConstant;
+    double height = Constants.targetHeight;
+    double C = Constants.turretHeight;
+    
     
     int distanceEntries = Double.valueOf(Math.floor((maxDistance - minDistance) / simIncrement)).intValue();
     int velocityComponenEntries = Double.valueOf(Math.floor((2 * maxVelComponent) / simIncrement)).intValue();
@@ -39,10 +39,10 @@ public class concept {
                 }
             }
         }
-        System.out.print(lookupTable);
+        System.out.print(lookupTable.size());
     }
 
     public static void main(String[] args) {
-        new concept().generateTable();
+        new AdvancedInterpolator().generateTable();
     }
 };
