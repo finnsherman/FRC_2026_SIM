@@ -11,9 +11,9 @@ public class concept {
     double minDistance = 1;
     double maxDistance = 5;
     double height = 2;
-    double C = 0.5588;
-    double g = 9.81;
-    double targetHeight = 2;
+    double C = 0.5588; // height at which game piece leaves turret
+    double g = 9.81; // gravity
+    double targetHeight = 2; // target height
     
     int distanceEntries = Double.valueOf(Math.floor((maxDistance - minDistance) / simIncrement)).intValue();
     int velocityComponenEntries = Double.valueOf(Math.floor((2 * maxVelComponent) / simIncrement)).intValue();
