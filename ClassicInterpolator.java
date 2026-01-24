@@ -14,7 +14,7 @@ public class ClassicInterpolator {
     public Map<Double, result> generate_table() {
         for (double distance = 1; distance <= 20; distance += 0.2) {
             for (double theta = 15; theta <= 45; theta += 1) {
-                double velocity = Math.sqrt((Math.pow(distance, 2) * g) / (Math.pow(Math.cos(theta), 2) * 2 * (dy - distance * Math.tan(theta))));
+                double velocity = Math.sqrt(Math.abs((Math.pow(distance, 2) * g) / (Math.pow(Math.cos(theta), 2) * 2 * (dy - distance * Math.tan(theta)))));
                 lookupTable.put(Double.valueOf(distance), new result(theta, velocity));
             }
         }
