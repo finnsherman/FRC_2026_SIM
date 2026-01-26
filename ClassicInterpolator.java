@@ -3,19 +3,19 @@ import java.util.Map;
 
 public class ClassicInterpolator {
 
-    private record result(double pitch, double velocity) {
+    private record params(double distance, double angle) {
     }
 
-    Map<Double, result> lookupTable = new HashMap<>();
+    Map<Double, params> lookupTable = new HashMap<>();
     double g = Constants.gravitationalConstant;
     double dy = Constants.targetHeight;
     double distance;
 
-    public Map<Double, result> generate_table() {
+    public Map<Double, params> generate_table() {
         for (double distance = 1; distance <= 20; distance += 0.2) {
             for (double theta = 15; theta <= 45; theta += 1) {
                 double velocity = Math.sqrt(Math.abs((Math.pow(distance, 2) * g) / (Math.pow(Math.cos(theta), 2) * 2 * (dy - distance * Math.tan(theta)))));
-                lookupTable.put(Double.valueOf(distance), new result(theta, velocity));
+                lookupTable.put(Double.valueOf(velocity), new params(distance, theta));
             }
         }
         return lookupTable;
