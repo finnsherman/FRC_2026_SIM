@@ -11,6 +11,8 @@ import static java.lang.Math.cos;
 import static java.lang.Math.tan;
 
 import java.lang.invoke.ConstantBootstraps;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Interpolator {
     double graivty = Constants.gravitationalConstant;
@@ -28,9 +30,10 @@ public class Interpolator {
 
     // At most all you should know to input is how fast the ROBOT is moving and where it is. 
     private record ShotInput(double px, double py, double vx, double vy) { };
-    private record ShotCanidate(ShotInput input, double pitch, double yaw) { };
+    private record ShotCanidate(ShotInput input, double pitch, double yaw, double score) { };
 
-    public Interpolator() {
+    public Map<ShotInput, ShotCanidate> simulate() {
+        Map<ShotInput, ShotCanidate> table = new HashMap<>();
         for (double px = Constants.fieldMinX; px <= Constants.fieldMaxX; px += increment) {
             for (double py = Constants.fieldMinY; py <= Constants.fieldMaxY; py += increment) {
                 double dx = TX - px;
@@ -49,14 +52,18 @@ public class Interpolator {
                             double thetaRads = toRadians(theta);
 
                             // distance(r) is supposed to by XY distance right?
-                            double stationaryLaunchSpeed = sqrt(abs((pow(r, 2) * graivty)
-                        / (pow(cos(thetaRads), 2) * 2 * (TZ - r * Math.tan(thetaRads)))));
 
+                            double stationaryLaunchSpeed = sqrt(abs((pow(r, 2) * graivty)
+                                / (pow(cos(thetaRads), 2) * 2 * (TZ - r * Math.tan(thetaRads)))));
+                            
+                            
                         }
                     }
                 }
             }
         }
+
+        return table;
     }
 
 }
