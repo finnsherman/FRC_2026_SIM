@@ -5,6 +5,8 @@ public class Constants {
     public static final double gravitationalConstant = 9.81; // gravity
     public static final double targetHeight = 2; // target height
 
+    public static final double minPitch = 45; 
+    public static final double maxPitch = 90;
 
     // TBT
     public static final double targetX = 6;
@@ -14,4 +16,6 @@ public class Constants {
     public static final double fieldMinY = 0;
     public static final double fieldMaxX = 10;
     public static final double fieldMaxY = 10;
+
+    public static final double velocityRange;
 }
