@@ -46,12 +46,22 @@ public class Interpolator {
         return new computedShotComponents(stationaryLaunchSpeed, sx, sy, sz);
     }
 
-    double computeEpsilon(double r, t) {
-        double D2 = 
-            ( -0.5 ) * graivty * (pow(r, 2) / ) +
-            (r)
+    double computeDistance(double v, double pitch, double height) {
+        double r = v * cos(pitch);
+        double t = r / cos(pitch);
+
+        return (
+            -0.5 * graivty * pow(t, 2) + v * sin(pitch) * t + height
+        );
     }
-    
+
+    double compute_dEpsilon_dPitch(double v, double pitch, double height, double delta) {
+        return (computeDistance(v, pitch + delta, height) - computeDistance(v, pitch, height)) / delta;
+    }
+
+    double compute_dEpsilon_dSpeed(double v, double pitch, double height, double delta) {
+        return (computeDistance(v + delta, pitch, height) - computeDistance(v, pitch, height)) / delta;
+    }
 
     public Map<ShotInput, ShotCanidate> simulate() {
         Map<ShotInput, ShotCanidate> table = new HashMap<>();
@@ -96,13 +106,14 @@ public class Interpolator {
 
                             double nxy = sqrt(pow(nx, 2) + pow(ny, 2));
 
-                            double timeToShot = r / nxy ;
+                            double timeToShot = r / nxy;
 
-                            double score = timeToShot + shotSpeed;
+                            double dEpsilondPitch = compute_dEpsilon_dPitch(shotSpeed, theta, TZ, increment);
+                            double dEpsilondSpeed = compute_dEpsilon_dSpeed(shotSpeed, theta, TZ, increment);
+
+                            double score = timeToShot + shotSpeed + dEpsilondPitch + dEpsilondSpeed;
 
                             canidateSpace[(int) floor((theta - pitchMin) / increment)] = new ShotCanidate(input, theta, correctedYaw, score);
-                            
-
                         }
 
                         Arrays.sort(canidateSpace);
