@@ -44,6 +44,8 @@ public class Interpolator {
         return new computedShotComponents(stationaryLaunchSpeed, sx, sy, sz);
     }
 
+    
+
     public Map<ShotInput, ShotCanidate> simulate() {
         Map<ShotInput, ShotCanidate> table = new HashMap<>();
         for (double px = Constants.fieldMinX; px <= Constants.fieldMaxX; px += increment) {
@@ -77,8 +79,7 @@ public class Interpolator {
                             
                             double correctedYaw = atan2(shotComponents.sx - vx, shotComponents.sy - vy);
 
-                            // d theta / d speed
-                            score += abs((computeShot(r, thetaRads, toTargetYawRadians).speed - computeShot(r, thetaRads + increment, toTargetYawRadians).speed) / increment);
+                            
 
                         }
                     }             
