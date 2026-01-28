@@ -29,8 +29,20 @@ public class Interpolator {
     double pitchMax = Constants.maxPitch;
 
     // At most all you should know to input is how fast the ROBOT is moving and where it is. 
-    private record ShotInput(double px, double py, double vx, double vy) { };
+    private record ShotInput(double px, double py, double vx, double  y) { };
     private record ShotCanidate(ShotInput input, double pitch, double yaw, double score) { };
+    private record computedShotComponents(double speed, double sx, double sy, double sz) { };
+
+    computedShotComponents computeShot(double r, double pitch, double yaw) {
+        double stationaryLaunchSpeed = sqrt(abs((pow(r, 2) * graivty)
+                                / (pow(cos(pitch), 2) * 2 * (TZ - r * tan(pitch)))));
+
+                            double sz = stationaryLaunchSpeed * sin(pitch);
+
+                            double sx = stationaryLaunchSpeed * cos(yaw);
+                            double sy = stationaryLaunchSpeed * sin(yaw);
+        return new computedShotComponents(stationaryLaunchSpeed, sx, sy, sz);
+    }
 
     public Map<ShotInput, ShotCanidate> simulate() {
         Map<ShotInput, ShotCanidate> table = new HashMap<>();
@@ -42,23 +54,34 @@ public class Interpolator {
                 double toTargetYawRadians = atan2(dy, dx);
                 double toTargetPitchRadians = atan2(TZ, r);
 
+                for (double theta = pitchMin; theta <= pitchMax; theta += increment) {
+                    double thetaRadians = toRadians(theta);
+                    
+                }
+
                 // vx and vy are ROBOT sppeeds including turret movements, not including speed used to shot robot. 
 
                 for (double vx = -vrange; vx <= vrange; vx += increment) {
                     for (double vy = -vrange; vy <= vrange; vy += increment) {
                         ShotInput input = new ShotInput(px, py, vx, vy);
-
+                        double vxy = sqrt(pow(vx, 2) + pow(vy, 2));
                         for (double theta = pitchMin; theta <= pitchMax; theta += increment) {
                             double thetaRads = toRadians(theta);
 
+                            double score = 0;
+
                             // distance(r) is supposed to by XY distance right?
 
-                            double stationaryLaunchSpeed = sqrt(abs((pow(r, 2) * graivty)
-                                / (pow(cos(thetaRads), 2) * 2 * (TZ - r * Math.tan(thetaRads)))));
+                            computedShotComponents shotComponents = computeShot(r, thetaRads, toTargetYawRadians);
+
                             
-                            
+                            double correctedYaw = atan2(shotComponents.sx - vx, shotComponents.sy - vy);
+
+                            // d theta / d speed
+                            score += abs((computeShot(r, thetaRads, toTargetYawRadians).speed - computeShot(r, thetaRads + increment, toTargetYawRadians).speed) / increment);
+
                         }
-                    }
+                    }             
                 }
             }
         }
