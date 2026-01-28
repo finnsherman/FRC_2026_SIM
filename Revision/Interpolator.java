@@ -5,12 +5,14 @@ import static java.lang.Math.pow;
 import static java.lang.Math.abs;
 import static java.lang.Math.atan2;
 import static java.lang.Math.toRadians;
-
+import static java.lang.Math.floor;
+import static java.lang.Math.floorMod;
 import static java.lang.Math.sin;
 import static java.lang.Math.cos;
 import static java.lang.Math.tan;
 
 import java.lang.invoke.ConstantBootstraps;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,10 +46,16 @@ public class Interpolator {
         return new computedShotComponents(stationaryLaunchSpeed, sx, sy, sz);
     }
 
+    double computeEpsilon(double r, t) {
+        double D2 = 
+            ( -0.5 ) * graivty * (pow(r, 2) / ) +
+            (r)
+    }
     
 
     public Map<ShotInput, ShotCanidate> simulate() {
         Map<ShotInput, ShotCanidate> table = new HashMap<>();
+        int canidateCount =  (int) floor((pitchMax - pitchMin) / increment);
         for (double px = Constants.fieldMinX; px <= Constants.fieldMaxX; px += increment) {
             for (double py = Constants.fieldMinY; py <= Constants.fieldMaxY; py += increment) {
                 double dx = TX - px;
@@ -67,21 +75,38 @@ public class Interpolator {
                     for (double vy = -vrange; vy <= vrange; vy += increment) {
                         ShotInput input = new ShotInput(px, py, vx, vy);
                         double vxy = sqrt(pow(vx, 2) + pow(vy, 2));
+
+                        ShotCanidate[] canidateSpace = new ShotCanidate[canidateCount];
+
                         for (double theta = pitchMin; theta <= pitchMax; theta += increment) {
                             double thetaRads = toRadians(theta);
 
-                            double score = 0;
-
-                            // distance(r) is supposed to by XY distance right?
-
                             computedShotComponents shotComponents = computeShot(r, thetaRads, toTargetYawRadians);
+                            double shotSpeed = shotComponents.speed;
 
-                            
+                            double sx = shotComponents.sx;
+                            double sy = shotComponents.sy;
+                            double sz = shotComponents.sz;
+
                             double correctedYaw = atan2(shotComponents.sx - vx, shotComponents.sy - vy);
 
+                            double nx = vx + sx;
+                            double ny = vy + sy;
+                            double nz = 0 + sz;
+
+                            double nxy = sqrt(pow(nx, 2) + pow(ny, 2));
+
+                            double timeToShot = r / nxy ;
+
+                            double score = timeToShot + shotSpeed;
+
+                            canidateSpace[(int) floor((theta - pitchMin) / increment)] = new ShotCanidate(input, theta, correctedYaw, score);
                             
 
                         }
+
+                        Arrays.sort(canidateSpace);
+                        table.put(input, canidateSpace[0]);
                     }             
                 }
             }
